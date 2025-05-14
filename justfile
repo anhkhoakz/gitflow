@@ -11,7 +11,7 @@ minify:
     minify stylesheets/stylesheet.css  -o stylesheets/stylesheet.min.css
     minify stylesheets/pygment_trac.css  -o stylesheets/pygment_trac.min.css
     minify stylesheets/print.css  -o stylesheets/print.min.css
-    minify params.json  -o params.json
+    minify params.json -o params.json
 
 # compress images
 compress-image:
