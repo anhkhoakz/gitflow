@@ -18,5 +18,5 @@ VERSION=$1
 # Implement your script here.
 
 # Return the VERSION
-echo ${VERSION}
+echo "${VERSION}"
 exit 0
