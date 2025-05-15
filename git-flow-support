@@ -82,8 +82,8 @@ v,verbose         Verbose (more) output
 	# Parse arguments
 	parse_args "$@"
 
-	support_branches=$(git_local_branches_prefixed "$PREFIX")
-	if [ -z "$support_branches" ]; then
+	support_branches=$(git_local_branches_prefixed "${PREFIX}")
+	if [[ -z "${support_branches}" ]]; then
 		warn "No support branches exist."
 		warn ""
 		warn "You can start a new support branch:"
@@ -96,36 +96,36 @@ v,verbose         Verbose (more) output
 
 	# Determine column width first
 	width=0
-	for branch in $support_branches; do
+	for branch in ${support_branches}; do
 		len=${#branch}
-		width=$(max $width $len)
+		width=$(max "${width}" "${len}")
 	done
-	width=$(($width+3-${#PREFIX}))
+	width=$((${width}+3-${#PREFIX}))
 
-	for branch in $support_branches; do
-		base=$(git merge-base "$branch" "$MASTER_BRANCH")
-		master_sha=$(git rev-parse "$MASTER_BRANCH")
-		branch_sha=$(git rev-parse "$branch")
-		if [ "$branch" = "$current_branch" ]; then
+	for branch in ${support_branches}; do
+		base=$(git merge-base "${branch}" "${MASTER_BRANCH}")
+		master_sha=$(git rev-parse "${MASTER_BRANCH}")
+		branch_sha=$(git rev-parse "${branch}")
+		if [[ "${branch}" = "${current_branch}" ]]; then
 			printf "* "
 		else
 			printf "  "
 		fi
 		if flag verbose; then
-			printf "%-${width}s" "${branch#$PREFIX}"
-			if [ "$branch_sha" = "$master_sha" ]; then
+			printf "%-${width}s" "${branch#"${PREFIX}"}"
+			if [[ "${branch_sha}" = "${master_sha}" ]]; then
 				printf "(no commits yet)"
 			else
-				tagname=$(git name-rev --tags --no-undefined --name-only "$base")
-				if [ "$tagname" != "" ]; then
-					nicename=$tagname
+				tagname=$(git name-rev --tags --no-undefined --name-only "${base}")
+				if [[ "${tagname}" != "" ]]; then
+					nicename=${tagname}
 				else
-					nicename=$(git rev-parse --short "$base")
+					nicename=$(git rev-parse --short "${base}")
 				fi
-				printf "(based on $nicename)"
+				printf "(based on ${nicename})"
 			fi
 		else
-			printf "%s" "${branch#$PREFIX}"
+			printf "%s" "${branch#"${PREFIX}"}"
 		fi
 		echo
 	done
@@ -142,18 +142,18 @@ parse_args() {
 	eval set -- "${FLAGS_ARGV}"
 
 	# Read arguments into global variables
-	if [ -z $1 ]; then
+	if [[ -z "$1" ]]; then
 		VERSION=''
 	else
 		VERSION=$1
 	fi
 
-	if [ -z $2 ]; then
+	if [[ -z "$2" ]]; then
 		BASE=''
 	else
 		BASE=$2
 	fi
-	BRANCH=$PREFIX$VERSION
+	BRANCH=${PREFIX}${VERSION}
 }
 
 cmd_start() {
@@ -167,7 +167,7 @@ showcommands!     Show git commands while executing them
 F,[no]fetch       Fetch from origin before performing finish
 "
 	# Define flags
-	DEFINE_boolean 'fetch' false "fetch from $ORIGIN before performing finish" F
+	DEFINE_boolean 'fetch' false "fetch from ${ORIGIN} before performing finish" F
 
 	# Override defaults with values from config
 	gitflow_override_flag_boolean   "support.start.fetch"   "fetch"
@@ -183,19 +183,19 @@ F,[no]fetch       Fetch from origin before performing finish
 
 	# Fetch remote changes
 	if flag fetch; then
-		git_fetch_branch "$ORIGIN" "$BASE"
+		git_fetch_branch "${ORIGIN}" "${BASE}"
 	fi
 
-	git_is_ancestor "$BASE" "$MASTER_BRANCH" || die "Given base '$BASE' is not a valid commit on '$MASTER_BRANCH'."
+	git_is_ancestor "${BASE}" "${MASTER_BRANCH}" || die "Given base '${BASE}' is not a valid commit on '${MASTER_BRANCH}'."
 
-	require_branch_absent "$BRANCH"
+	require_branch_absent "${BRANCH}"
 
 	# Create branch
-	git_do checkout -b "$BRANCH" "$BASE" || die "Could not create support branch '$BRANCH'."
+	git_do checkout -b "${BRANCH}" "${BASE}" || die "Could not create support branch '${BRANCH}'."
 
 	echo
 	echo "Summary of actions:"
-	echo "- A new branch '$BRANCH' was created, based on '$BASE'"
+	echo "- A new branch '${BRANCH}' was created, based on '${BASE}'"
 	echo "- You are now on branch '$(git_current_branch)'"
 	echo
 }
@@ -225,27 +225,27 @@ p,[no]preserve-merges  Preserve merges
 	parse_args "$@"
 
 	# Use current branch if no version is given
-	if [ "$VERSION" = "" ]; then
+	if [[ "${VERSION}" = "" ]]; then
 		gitflow_use_current_branch_version
 	fi
 
-	BASE_BRANCH=$(gitflow_config_get_base_branch $BRANCH)
-	BASE_BRANCH=${BASE_BRANCH:-$DEVELOP_BRANCH}
+	BASE_BRANCH=$(gitflow_config_get_base_branch "${BRANCH}")
+	BASE_BRANCH=${BASE_BRANCH:-${DEVELOP_BRANCH}}
 
-	warn "Will try to rebase '$NAME' which is based on '$BASE_BRANCH'..."
+	warn "Will try to rebase '${NAME}' which is based on '${BASE_BRANCH}'..."
 	if ! git_config_bool_exists "rebase.autostash"; then
 		require_clean_working_tree
 	fi
-	require_branch "$BRANCH"
+	require_branch "${BRANCH}"
 
-	git_local_branch_exists "$BASE_BRANCH" || die "The base '$BASE_BRANCH' doesn't exists locally or is not a branch. Can't rebase the support branch '$BRANCH'."
+	git_local_branch_exists "${BASE_BRANCH}" || die "The base '${BASE_BRANCH}' doesn't exists locally or is not a branch. Can't rebase the support branch '${BRANCH}'."
 
-	git_do checkout -q "$BRANCH"  || die "Could not check out branch '$BRANCH'."
+	git_do checkout -q "${BRANCH}"  || die "Could not check out branch '${BRANCH}'."
 	if flag interactive; then
-		opts="$opts -i"
+		opts="${opts} -i"
 	fi
 	if flag preserve_merges; then
-		opts="$opts -p"
+		opts="${opts} -p"
 	fi
-	git_do rebase $opts "$BASE_BRANCH"
+	git_do rebase "${opts}" "${BASE_BRANCH}"
 }

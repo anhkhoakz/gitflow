@@ -37,7 +37,7 @@
 #
 #
 # enable debug mode
-if [ "$DEBUG" = "yes" ]; then
+if [ "${DEBUG}" = "yes" ]; then
 	set -x
 fi
 
@@ -54,15 +54,15 @@ FreeBSD|OpenBSD|NetBSD)
 	;;
 Darwin)
 	PRG="$0"
-	while [ -h "$PRG" ]; do
-		link=$(readlink "$PRG")
-		if expr "$link" : '/.*' > /dev/null; then
-			PRG="$link"
+	while [ -h "${PRG}" ]; do
+		link=$(readlink "${PRG}")
+		if expr "${link}" : '/.*' > /dev/null; then
+			PRG="${link}"
 		else
-			PRG="$(dirname "$PRG")/$link"
+			PRG="$(dirname "${PRG}")/${link}"
 		fi
 	done
-	export GITFLOW_DIR=$(dirname "$PRG")
+	export GITFLOW_DIR=$(dirname "${PRG}")
 	;;
 *MINGW*)
 	export GITFLOW_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
@@ -112,11 +112,11 @@ main() {
 	fi
 
 	# Use the shFlags project to parse the command line arguments
-	. "$GITFLOW_DIR/gitflow-shFlags"
+	. "${GITFLOW_DIR}/gitflow-shFlags"
 	FLAGS_PARENT="git flow"
 
 	# Load common functionality
-	. "$GITFLOW_DIR/gitflow-common"
+	. "${GITFLOW_DIR}/gitflow-common"
 
 	# allow user to request git action logging
 	DEFINE_boolean 'showcommands' false 'Show actions taken (git commands)'
@@ -133,25 +133,25 @@ main() {
 				SUBACTION="${SUBCOMMAND}"
 				SUBCOMMAND="feature"
 				_prefix=$(git config --get gitflow.prefix.feature)
-				_short_branch_name=$(echo ${_current_branch#*${_prefix}})
+				_short_branch_name=$(echo "${_current_branch#*"${_prefix}"}")
 			else
 				if startswith "${_current_branch}" $(git config --get gitflow.prefix.bugfix); then
 					SUBACTION="${SUBCOMMAND}"
 					SUBCOMMAND="bugfix"
 					_prefix=$(git config --get gitflow.prefix.bugfix)
-					_short_branch_name=$(echo ${_current_branch#*${_prefix}})
+					_short_branch_name=$(echo "${_current_branch#*"${_prefix}"}")
 				else
 					if startswith "${_current_branch}" $(git config --get gitflow.prefix.hotfix); then
 						SUBACTION="${SUBCOMMAND}"
 						SUBCOMMAND="hotfix"
 						_prefix=$(git config --get gitflow.prefix.hotfix)
-						_short_branch_name=$(echo ${_current_branch#*${_prefix}})
+						_short_branch_name=$(echo "${_current_branch#*"${_prefix}"}")
 					else
 						if startswith "${_current_branch}" $(git config --get gitflow.prefix.release); then
 							SUBACTION="${SUBCOMMAND}"
 							SUBCOMMAND="release"
 							_prefix=$(git config --get gitflow.prefix.release)
-							_short_branch_name=$(echo ${_current_branch#*${_prefix}})
+							_short_branch_name=$(echo "${_current_branch#*"${_prefix}"}")
 						fi
 					fi
 				fi
@@ -159,14 +159,14 @@ main() {
 		fi
 	fi
 
-		if [ ! -e "$GITFLOW_DIR/git-flow-$SUBCOMMAND" ]; then
+		if [ ! -e "${GITFLOW_DIR}/git-flow-${SUBCOMMAND}" ]; then
 		usage
 		exit 1
 	fi
 
 	# Run command
-	. "$GITFLOW_DIR/git-flow-$SUBCOMMAND"
-	FLAGS_PARENT="git flow $SUBCOMMAND"
+	. "${GITFLOW_DIR}/git-flow-${SUBCOMMAND}"
+	FLAGS_PARENT="git flow ${SUBCOMMAND}"
 
 	if [ -z "${SUBACTION}" ]; then
 		# If the first argument is a flag, it starts with '-', we interpret this
@@ -179,31 +179,31 @@ main() {
 			SUBACTION="$1"
 			shift
 			# Do not allow direct calls to subactions with an underscore.
-			if $(contains "$SUBACTION" "_"); then
-				warn "Unknown subcommand: '$SUBACTION'"
+			if $(contains "${SUBACTION}" "_"); then
+				warn "Unknown subcommand: '${SUBACTION}'"
 				usage
 				exit 1
 			fi
 			# Replace the dash with an underscore as bash doesn't allow a dash
 			# in the function name.
-			SUBACTION=$(echo "$SUBACTION" |tr '-' '_')
+			SUBACTION=$(echo "${SUBACTION}" |tr '-' '_')
 		fi
 	fi
 
-	if ! type "cmd_$SUBACTION" >/dev/null 2>&1; then
-		warn "Unknown subcommand: '$SUBACTION'"
+	if ! type "cmd_${SUBACTION}" >/dev/null 2>&1; then
+		warn "Unknown subcommand: '${SUBACTION}'"
 		usage
 		exit 1
 	fi
 
 	# Run the specified action
-	if [ $SUBACTION != "help" ] && [ $SUBCOMMAND != "init" ]; then
+	if [ "${SUBACTION}" != "help" ] && [ "${SUBCOMMAND}" != "init" ]; then
 		initialize
 	fi
-	if [ $SUBACTION != 'default' ]; then
-		FLAGS_PARENT="git flow $SUBCOMMAND $SUBACTION"
+	if [ "${SUBACTION}" != 'default' ]; then
+		FLAGS_PARENT="git flow ${SUBCOMMAND} ${SUBACTION}"
 	fi
 
-	cmd_$SUBACTION "$@" "${_short_branch_name}"
+	cmd_"${SUBACTION}" "$@" "${_short_branch_name}"
 }
 main "$@"
