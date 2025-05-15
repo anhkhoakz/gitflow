@@ -4,7 +4,6 @@ A collection of Git extensions to provide high-level repository operations
 for Vincent Driessen's [branching model](http://nvie.com/git-model "original
 blog post"). This fork adds functionality not added to the original branch.
 
-
 ## Getting started
 
 For the best introduction to get started with `git flow`, please read Jeff
@@ -26,7 +25,6 @@ A quick cheatsheet was made by Daniel Kummer:
 
 See the Wiki for up-to-date [Installation Instructions](https://github.com/petervanderdoes/gitflow-avh/wiki/Installation).
 
-
 ## Integration with your shell
 
 For those who use the [Bash](http://www.gnu.org/software/bash/) or [ZSH](http://www.zsh.org)
@@ -37,12 +35,11 @@ project by [bobthecow](http://github.com/bobthecow). Both offer tab-completion
 for git-flow subcommands and branch names with my fork including tab-completion
 for the commands not found in the original git-flow.
 
-
 ## FAQ
 
 * See the [FAQ](http://github.com/petervanderdoes/gitflow-avh/wiki/FAQ) section
 of the project Wiki.
-* Version Numbering Scheme.  
+* Version Numbering Scheme.
 Starting with version 1.0, the project uses the following scheme:
 \<MAJOR\>.\<MINOR\>.\<REVISION\>\
 * AVH is the acronym of "A VirtualHome"
@@ -102,14 +99,15 @@ share any modifications you make to the source code, you are very much
 encouraged and invited to contribute back your modifications to the community,
 preferably in a Github fork, of course.
 
-
 ## git flow usage
 
 ### Initialization
 
 To initialize a new repo with the basic branch structure, use:
 
+```shell
     git flow init [-d]
+```
 
 This will then interactively prompt you with some questions on which branches
 you would like to use as development and production branches, and how you
@@ -176,16 +174,19 @@ git flow support start <release> <base>
 You can easily publish a feature you are working on. The reason can be to allow other programmers to work on it or to access it from another machine. The publish/track feature of gitflow simplify the creation of a remote branch and its tracking.
 
 When you want to publish a feature just use:
+
 ```shell
 git flow feature publish <name>
 ```
 
 or, if you already are into the `feature/<name>` branch, just issue:
+
 ```shell
 git flow feature publish
 ```
 
 Now if you execute `git branch -avv` you will see that your branch `feature/<name>` tracks `[origin/feature/<name>]`. To track the same remote branch in another clone of the same repository use:
+
 ```shell
 git flow feature track <name>
 ```
@@ -193,6 +194,7 @@ git flow feature track <name>
 This will create a local feature `feature/<name>` that tracks the same remote branch as the original one, that is `origin/feature/<name>`.
 
 When one developer (depending on your work flow) finishes working on the feature he or she can issue `git flow feature finish <name>` and this will automatically delete the remote branch. All other developers shall then run:
+
 ```shell
     git flow feature delete <name>
 ```
@@ -204,31 +206,35 @@ to get rid of the local feature that tracks a remote branch that no more exist.
 You can publish an hotfix you are working on. The reason can be to allow other programmers to work on it or validate it or to access it from another machine.
 
 When you want to publish an hotfix just use (as you did for features):
+
 ```shell
 git flow hotfix publish <name>
 ```
 
 or, if you already are into the `hotfix/<name>` branch, just issue:
+
 ```shell
 git flow hotfix publish
 ```
 
 Other developers can now update their repositories and checkout the hotfix:
+
 ```shell
 git pull
 git checkout hotfix/<name>
 ```
+
 and eventually finish it:
+
 ```shell
 git flow hotfix finish
 ```
 
-
 ### Using Hooks and Filters
 
 For a wide variety of commands hooks or filters can be called before and after
-the command.  
-The files should be placed in .git/hooks  
+the command.
+The files should be placed in .git/hooks
 In the directory hooks you can find examples of all the hooks available.
 
 ## Showing your appreciation
@@ -240,5 +246,4 @@ in another way, however, consider donating through PayPal:
 [![PayPal][2]][1]
 
 [1]: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=S85FXJ9EBHAF2&lc=US&item_name=gitflow&item_number=gitflow&no_note=0&cn=Add%20special%20instructions%20to%20the%20seller&no_shipping=1&rm=1&return=https%3a%2f%2fgithub%2ecom%2fpetervanderdoes%2fgitflow&cancel_return=https%3a%2f%2fgithub%2ecom%2fpetervanderdoes%2fgitflow&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-
 [2]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
