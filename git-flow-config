@@ -61,10 +61,10 @@ parse_args() {
 	FLAGS "$@" || exit $?
 	eval set -- "${FLAGS_ARGV}"
 
-	OPTION=$(echo $1|tr '[:upper:]' '[:lower:]')
+	OPTION=$(echo "$1"|tr '[:upper:]' '[:lower:]')
 
-	if [ "$FLAGS_file" != "" ]; then
-		gitflow_config_option="--file '$FLAGS_file'"
+	if [[ "${FLAGS_file}" != "" ]]; then
+		gitflow_config_option="--file '${FLAGS_file}'"
 	elif flag local; then
 		gitflow_config_option="--local"
 	elif flag global; then
@@ -107,29 +107,29 @@ file=     Use given config file
 	# Parse arguments
 	parse_args "$@"
 
-	output=$(git config $gitflow_config_option --get gitflow.branch.master)
-	echo "Branch name for production releases: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.branch.master)
+	echo "Branch name for production releases: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.branch.develop)
-	echo "Branch name for \"next release\" development: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.branch.develop)
+	echo "Branch name for \"next release\" development: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.feature)
-	echo "Feature branch prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.feature)
+	echo "Feature branch prefix: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.bugfix)
-	echo "Bugfix branch prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.bugfix)
+	echo "Bugfix branch prefix: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.release)
-	echo "Release branch prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.release)
+	echo "Release branch prefix: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.hotfix)
-	echo "Hotfix branch prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.hotfix)
+	echo "Hotfix branch prefix: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.support)
-	echo "Support branch prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.support)
+	echo "Support branch prefix: ${output} "
 
-	output=$(git config $gitflow_config_option --get gitflow.prefix.versiontag)
-	echo "Version tag prefix: $output "
+	output=$(git config "${gitflow_config_option}" --get gitflow.prefix.versiontag)
+	echo "Version tag prefix: ${output} "
 }
 
 cmd_set() {
@@ -157,7 +157,7 @@ file=     Use given config file
 	eval set -- "${FLAGS_ARGV}"
 	value=$2
 
-	case $OPTION in
+	case ${OPTION} in
 	master)
 		cfg_option="gitflow.branch.master"
 		txt="Branch name for production releases"
@@ -199,35 +199,35 @@ file=     Use given config file
 		;;
 	esac
 
-	[ -n "$value" ] || die_help "No value given"
+	[[ -n "${value}" ]] || die_help "No value given"
 
-	if [ $OPTION = "master" ]; then
+	if [[ "${OPTION}" = "master" ]]; then
 		develop_branch=$(git config --get gitflow.branch.develop)
-		if [ "$value" = $develop_branch ]; then
+		if [[ "${value}" = "${develop_branch}" ]]; then
 			die "Production and \"next release\" branch should differ."
 		fi
 
-		if ! git_local_branch_exists "$value" && git_remote_branch_exists "origin/$value"; then
-			git_do branch "$value" "origin/$value" >/dev/null 2>&1
-		elif ! git_local_branch_exists "$value"; then
-			die "Local branch '$value' does not exist."
+		if ! git_local_branch_exists "${value}" && git_remote_branch_exists "origin/${value}"; then
+			git_do branch "${value}" "origin/${value}" >/dev/null 2>&1
+		elif ! git_local_branch_exists "${value}"; then
+			die "Local branch '${value}' does not exist."
 		fi
 	fi
 
-	if [ $OPTION = "develop" ]; then
+	if [[ "${OPTION}" = "develop" ]]; then
 		master_branch=$(git config --get gitflow.branch.master)
-		if [ "$value" = $master_branch ]; then
+		if [[ "${value}" = "${master_branch}" ]]; then
 			die "Production and \"next release\" branch should differ."
 		fi
 
-		if ! git_local_branch_exists "$value" && git_remote_branch_exists "origin/$value"; then
-			git_do branch "$value" "origin/$value" >/dev/null 2>&1
-		elif ! git_local_branch_exists "$value"; then
-			die "Local branch '$value' does not exist."
+		if ! git_local_branch_exists "${value}" && git_remote_branch_exists "origin/${value}"; then
+			git_do branch "${value}" "origin/${value}" >/dev/null 2>&1
+		elif ! git_local_branch_exists "${value}"; then
+			die "Local branch '${value}' does not exist."
 		fi
 	fi
 
-	if [ $OPTION = "allowmultihotfix" ]; then
+	if [[ "${OPTION}" = "allowmultihotfix" ]]; then
 		check_boolean "${value}"
 		case $? in
 		${FLAGS_ERROR})
@@ -238,7 +238,7 @@ file=     Use given config file
 		esac
 	fi
 
-	git_do config $gitflow_config_option $cfg_option "$value"
+	git_do config "${gitflow_config_option}" "${cfg_option}" "${value}"
 
 	case $? in
 	0)
@@ -256,8 +256,8 @@ file=     Use given config file
 
 	echo
 	echo "Summary of actions:"
-	if [ "$FLAGS_file" != "" ]; then
-		echo "- Using configuration file '$FLAGS_file'"
+	if [[ "${FLAGS_file}" != "" ]]; then
+		echo "- Using configuration file '${FLAGS_file}'"
 	elif flag local; then
 		echo "- Using repository specific configuration file."
 	elif flag global; then
@@ -267,7 +267,7 @@ file=     Use given config file
 	else
 		echo "- Using repository specific configuration file."
 	fi
-	echo "- $txt set to $value"
+	echo "- ${txt} set to ${value}"
 	echo
 }
 
@@ -289,11 +289,11 @@ set               Set the given base for the given branch.
 	eval set -- "${FLAGS_ARGV}"
 
 	if flag 'set'; then
-		[ -z "$1" ] && die_help 'No branch given'
-		[ -z "$2" ] && die_help 'No base given'
+		[[ -z "$1" ]] && die_help 'No branch given'
+		[[ -z "$2" ]] && die_help 'No base given'
 		__set_base "$@"
 	else
-		[ -z "$1" ] && die_help 'No branch given'
+		[[ -z "$1" ]] && die_help 'No branch given'
 		__get_base "$@"
 	fi
 }
@@ -317,9 +317,9 @@ __get_base () {
 
 	base=$(gitflow_config_get_base_branch "$1")
 	echo
-	if [ -z "$base" ]; then
-		echo "Base branch not set for branch '"$1"'"
+	if [[ -z "${base}" ]]; then
+		echo "Base branch not set for branch '""$1""'"
 	else
-		echo "Base branch for branch '"$1"' set to '"$base"'"
+		echo "Base branch for branch '""$1""' set to '""${base}""'"
 	fi
 }

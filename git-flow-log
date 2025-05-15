@@ -83,13 +83,13 @@ showcommands!   Show git commands while executing them
 	local base=$(gitflow_config_get_base_branch $(git_current_branch))
 
 	# no base branch found, comparing against $master
-	if [ -z $base ]; then
-		base=$MASTER_BRANCH
+	if [[ -z "${base}" ]]; then
+		base=${MASTER_BRANCH}
 	fi
 
 	# Get the log
-	echo "Comparing against \"$base\" branch\n"
-	git_do log "$@""$base.."
+	echo "Comparing against \"${base}\" branch\n"
+	git_do log "$@""${base}.."
 }
 
 cmd_help() {

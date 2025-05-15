@@ -57,7 +57,7 @@ For more specific help type the command followed by --help
 }
 
 cmd_default() {
-	echo "$GITFLOW_VERSION (AVH Edition)"
+	echo "${GITFLOW_VERSION} (AVH Edition)"
 }
 
 cmd_help() {
